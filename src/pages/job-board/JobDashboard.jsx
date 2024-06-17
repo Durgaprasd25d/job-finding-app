@@ -4,7 +4,7 @@ import Header from "../../components/Header";
 import apiRequest from "../../utils/utils";
 import Loader from "../../components/Loader";
 
-const Dashboard = () => {
+const JobDashboard = () => {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({
@@ -163,4 +163,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default JobDashboard;
