@@ -3,10 +3,14 @@ import JobCard from "./JobCard";
 import Header from "../../components/Header";
 import apiRequest from "../../utils/utils";
 import Loader from "../../components/Loader";
+import Pagination from "../../components/Pagination";
+import { useAsyncError } from "react-router-dom";
 
 const JobDashboard = () => {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [jobsPerPage] = useState(3);
   const [filters, setFilters] = useState({
     workMode: [],
     department: [],
@@ -30,6 +34,11 @@ const JobDashboard = () => {
 
     fetchJobs();
   }, []);
+  const indexOfLastJob = currentPage * jobsPerPage;
+  const indexOfFirstJob = indexOfLastJob - jobsPerPage;
+  const currentJobs = jobs.slice(indexOfFirstJob, indexOfLastJob);
+
+  const totalPages = Math.ceil(jobs.length / jobsPerPage);
 
   const handleFilterChange = (filterType, value) => {
     setFilters((prevFilters) => ({
@@ -153,10 +162,17 @@ const JobDashboard = () => {
         {/* Job listings */}
         <div className="flex-1 overflow-y-auto p-6">
           <div className="grid grid-cols-1 gap-6">
-            {jobs.map((job) => (
+            {currentJobs.map((job) => (
               <JobCard key={job._id} job={job} />
             ))}
           </div>
+          {totalPages > 1 && (
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+            />
+          )}
         </div>
       </div>
     </div>

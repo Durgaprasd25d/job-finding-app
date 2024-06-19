@@ -16,7 +16,7 @@ const AdminDashboard = () => {
   const [jobStats, setJobStats] = useState([]);
   const [jobCount, setJobCount] = useState(0);
   const [userCount, setUserCount] = useState(0);
-  const [isAdmin, setIsAdmin] = useState(false); // State to track if user is admin
+  const [isAdmin, setIsAdmin] = useState(false); 
 
   useEffect(() => {
     const fetchData = async () => {
@@ -87,13 +87,13 @@ const AdminDashboard = () => {
             <div className="bg-white rounded-lg shadow-md p-6">
               <h2 className="text-xl font-semibold text-gray-800">Total Jobs</h2>
               <Link to="/admin/jobs">
-                <p className="text-4xl font-bold text-blue-600">{jobCount}</p>
+                <p className="text-4xl font-bold text-primary">{jobCount}</p>
               </Link>
             </div>
             <div className="bg-white rounded-lg shadow-md p-6">
               <h2 className="text-xl font-semibold text-gray-800">Total Users</h2>
-              <Link to="/users">
-                <p className="text-4xl font-bold text-blue-600">{userCount}</p>
+              <Link to="/admin/users">
+                <p className="text-4xl font-bold text-primary">{userCount}</p>
               </Link>
             </div>
           </div>

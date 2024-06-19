@@ -2,11 +2,11 @@ import React, { useState } from "react";
 import { toast } from "react-hot-toast";
 import API from "../utils/utils";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../contexts/AuthContext"; // Import useAuth hook from AuthContext
+import { useAuth } from "../contexts/AuthContext";
 
 const Login = () => {
   const navigate = useNavigate();
-  const { login } = useAuth(); // Get login function from AuthContext
+  const { login } = useAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -22,19 +22,14 @@ const Login = () => {
         password,
       });
 
-      console.log('API response:', response);
-
       if (response && response.token) {
         const { token, user } = response.token;
 
-        // Check if token and user are correctly received
         if (token && user) {
-          // Call login function to update authentication state
           login(token, user);
 
           toast.success("Login successful!");
 
-          // Navigate based on user role
           if (user.role === "admin") {
             navigate("/admin");
           } else {

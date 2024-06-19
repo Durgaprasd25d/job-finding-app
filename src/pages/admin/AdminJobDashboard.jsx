@@ -2,10 +2,13 @@ import React, { useState, useEffect } from "react";
 import AdminJobCard from "../admin/AdminJobCard";
 import apiRequest from "../../utils/utils";
 import Loader from "../../components/Loader";
+import Pagination from "../../components/Pagination";
 
-const JobDashboard = () => {
+const AdminJobDashboard = () => {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [jobsPerPage] = useState(3); // Number of jobs per page
   const [filters, setFilters] = useState({
     workMode: [],
     department: [],
@@ -37,16 +40,26 @@ const JobDashboard = () => {
     }));
   };
 
+  // Calculate the current jobs
+  const indexOfLastJob = currentPage * jobsPerPage;
+  const indexOfFirstJob = indexOfLastJob - jobsPerPage;
+  const currentJobs = jobs.slice(indexOfFirstJob, indexOfLastJob);
+
+  const totalPages = Math.ceil(jobs.length / jobsPerPage);
+
+  // Debugging logs
+  console.log("Current Page:", currentPage);
+  console.log("Total Pages:", totalPages);
+  console.log("Current Jobs:", currentJobs);
+
   if (loading) {
     return <Loader />; // Display Loader while fetching data
   }
 
   return (
     <div className="min-h-screen bg-gray-100">
-
       {/* Content */}
       <div className="flex p-6 mt-20">
-        {" "}
         {/* Adjust top margin to account for fixed header */}
         {/* Sidebar for filters */}
         <aside className="w-1/4 bg-white mt-5 shadow-lg p-4 rounded-lg sticky top-0 h-full overflow-y-auto">
@@ -150,14 +163,21 @@ const JobDashboard = () => {
         {/* Job listings */}
         <div className="flex-1 overflow-y-auto p-6">
           <div className="grid grid-cols-1 gap-6">
-            {jobs.map((job) => (
+            {currentJobs.map((job) => (
               <AdminJobCard key={job._id} job={job} />
             ))}
           </div>
+          {totalPages > 1 && (
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+            />
+          )}
         </div>
       </div>
     </div>
   );
 };
 
-export default JobDashboard;
+export default AdminJobDashboard;
