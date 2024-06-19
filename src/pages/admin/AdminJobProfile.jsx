@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import Loader from "../../components/Loader";
 import apiRequest from "../../utils/utils";
-import Loader from "../../components/Loader"; // Assuming you have a Loader component
+import axios from "axios";
+import AdminHeader from "../../components/AdminHeader";
 
 const AdminJobProfile = () => {
   const { id } = useParams();
@@ -28,8 +30,22 @@ const AdminJobProfile = () => {
     fetchJobDetails();
   }, [id]);
 
-  const handleApplyClick = () => {
-    navigate(`/apply/${id}`);
+  const handleEdit = () => {
+    navigate(`/admin/jobs/${id}/update`);
+  };
+
+  const handleDelete = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      await axios.delete(`http://localhost:5000/jobs/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      navigate(`/admin/jobs`);
+    } catch (error) {
+      console.error("Failed to delete job", error);
+    }
   };
 
   if (loading) {
@@ -42,12 +58,11 @@ const AdminJobProfile = () => {
 
   return (
     <div className="min-h-screen bg-gray-100">
+      <AdminHeader/>
       <div className="flex p-6 mt-20">
         <div className="bg-white shadow-lg rounded-lg overflow-hidden transform hover:scale-103 transition-transform duration-200 w-full cursor-pointer">
           <div className="p-6">
-            <h2 className="text-2xl font-semibold text-gray-900">
-              {job.title}
-            </h2>
+            <h2 className="text-2xl font-semibold text-gray-900">{job.title}</h2>
             <p className="text-gray-500 mt-2">{job.company}</p>
             <p className="text-gray-500 mt-1">{job.location}</p>
             <p className="mt-4 text-gray-700">{job.description}</p>
@@ -62,10 +77,16 @@ const AdminJobProfile = () => {
             <hr />
             <div className="flex justify-end">
               <button
-                onClick={handleApplyClick}
-                className="mt-4 bg-primary text-white py-2 px-4 rounded-lg hover:bg-primary-dark transition-colors duration-300"
+                onClick={handleEdit}
+                className="mr-2 m-4 bg-primary text-white py-2 px-4 rounded-lg hover:bg-primary-dark transition-colors duration-300"
               >
-                Apply
+                Update
+              </button>
+              <button
+                onClick={handleDelete}
+                className="bg-red-600 m-4 text-white py-2 px-4 rounded-lg hover:bg-red-700 transition-colors duration-300"
+              >
+                Delete
               </button>
             </div>
           </div>

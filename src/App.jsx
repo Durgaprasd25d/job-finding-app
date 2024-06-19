@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route,Navigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -12,15 +12,17 @@ import RequireRole from "./components/RequiredRole"; // Import RequireRole compo
 import MainDashboard from "./pages/Dashboard";
 import JobDashboard from "./pages/job-board/JobDashboard";
 import AdminJobDashboard from "./pages/admin/AdminJobDashboard";
+import AdminUpdateJob from "./pages/admin/AdminUpdateJob";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminUserList from "./pages/admin/AdminUserList";
 import NotFound from "./components/404"; // Import NotFound component
 import { AuthProvider } from "./contexts/AuthContext";
+import AdminCreateJobs from "./pages/admin/AdminCreateJobs";
 
 function App() {
   return (
     <Router>
-      <AuthProvider> {/* Wrap entire app with AuthProvider */}
+      <AuthProvider>
         <Toaster position="top-center" reverseOrder={false} />
         <Routes>
           {/* Public routes */}
@@ -31,7 +33,7 @@ function App() {
           {/* Protected routes */}
           <Route element={<RequireAuth />}>
             <Route element={<RequireRole role="user" />}>
-              <Route path="/job-board" element={<JobDashboard />} /> {/* User */}
+              <Route path="/job-board" element={<JobDashboard />} />
               <Route path="/jobs/:id" element={<JobProfile />} />
               <Route path="/apply/:id" element={<JobApply />} />
               <Route path="/profile" element={<Profile />} />
@@ -42,15 +44,17 @@ function App() {
           <Route element={<RequireAuth />}>
             <Route element={<RequireRole role="admin" />}>
               <Route path="/admin" element={<AdminDashboard />} />
-              <Route path="/admin/jobs" element={<AdminJobDashboard />} /> {/* Admin job list */}
-              <Route path="/admin/jobs/:id" element={<AdminJobProfile />} /> {/* Admin job profile */}
-              <Route path="/admin/users" element={<AdminUserList />} /> {/* Admin user list */}
+              <Route path="/admin/create-jobs" element={<AdminCreateJobs />} />
+              <Route path="/admin/jobs" element={<AdminJobDashboard />} />
+              <Route path="/admin/jobs/:id" element={<AdminJobProfile />} />
+              <Route path="/admin/jobs/:id/update" element={<AdminUpdateJob />} />
+              <Route path="/admin/users" element={<AdminUserList />} />
             </Route>
           </Route>
 
           {/* 404 Not Found route */}
           <Route path="/404" element={<NotFound />} />
-          <Route path="*" element={<Navigate to="/404" />} /> {/* Redirect any unknown routes to 404 */}
+          <Route path="*" element={<Navigate to="/404" />} />
         </Routes>
       </AuthProvider>
     </Router>

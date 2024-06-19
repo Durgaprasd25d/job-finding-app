@@ -3,6 +3,7 @@ import AdminJobCard from "../admin/AdminJobCard";
 import apiRequest from "../../utils/utils";
 import Loader from "../../components/Loader";
 import Pagination from "../../components/Pagination";
+import AdminHeader from '../../components/AdminHeader'
 
 const AdminJobDashboard = () => {
   const [jobs, setJobs] = useState([]);
@@ -58,6 +59,8 @@ const AdminJobDashboard = () => {
 
   return (
     <div className="min-h-screen bg-gray-100">
+    {/* Fixed Header */}
+    <AdminHeader />
       {/* Content */}
       <div className="flex p-6 mt-20">
         {/* Adjust top margin to account for fixed header */}

@@ -11,12 +11,13 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
+import AdminHeader from "../../components/AdminHeader";
 
 const AdminDashboard = () => {
   const [jobStats, setJobStats] = useState([]);
   const [jobCount, setJobCount] = useState(0);
   const [userCount, setUserCount] = useState(0);
-  const [isAdmin, setIsAdmin] = useState(false); 
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -33,8 +34,12 @@ const AdminDashboard = () => {
 
           // Fetch jobs and users simultaneously
           const [jobs, users] = await Promise.all([
-            apiRequest("GET", "/jobs", null, { Authorization: `Bearer ${token}` }),
-            apiRequest("GET", "/auth/users", null, { Authorization: `Bearer ${token}` }), // Fetch users
+            apiRequest("GET", "/jobs", null, {
+              Authorization: `Bearer ${token}`,
+            }),
+            apiRequest("GET", "/auth/users", null, {
+              Authorization: `Bearer ${token}`,
+            }),
           ]);
 
           // Group jobs and users by date
@@ -45,9 +50,11 @@ const AdminDashboard = () => {
           const formattedData = Object.keys(jobsByDate).map((date) => ({
             formattedCreatedAt: date,
             jobCount: jobsByDate[date].length,
-            jobTitles: jobsByDate[date].map(job => job.title).join(", "), // Concatenate job titles
+            jobTitles: jobsByDate[date].map((job) => job.title).join(", "),
             userCount: usersByDate[date] ? usersByDate[date].length : 0,
-            userNames: usersByDate[date] ? usersByDate[date].map(user => user.name).join(", ") : "", // Concatenate user names
+            userNames: usersByDate[date]
+              ? usersByDate[date].map((user) => user.name).join(", ")
+              : "",
           }));
 
           setJobStats(formattedData);
@@ -66,39 +73,44 @@ const AdminDashboard = () => {
 
   // Function to group data by date
   const groupByDate = (data, dateField) => {
-    const groupedData = {};
-    data.forEach((item) => {
-      const date = new Date(item[dateField]).toISOString().split("T")[0]; // Extract YYYY-MM-DD
-      if (groupedData[date]) {
-        groupedData[date].push(item);
-      } else {
-        groupedData[date] = [item];
-      }
-    });
-    return groupedData;
+    return data.reduce((acc, item) => {
+      const date = new Date(item[dateField]).toISOString().split("T")[0];
+      if (!acc[date]) acc[date] = [];
+      acc[date].push(item);
+      return acc;
+    }, {});
   };
 
   return isAdmin ? (
     <div className="min-h-screen bg-gray-100">
+      {/* Header Component */}
+      <AdminHeader />
+
       <div className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
         <div>
           <h1 className="text-3xl font-bold text-gray-800">Admin Dashboard</h1>
-          <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <div className="bg-white rounded-lg shadow-md p-6">
-              <h2 className="text-xl font-semibold text-gray-800">Total Jobs</h2>
+              <h2 className="text-xl font-semibold text-gray-800">
+                Total Jobs
+              </h2>
               <Link to="/admin/jobs">
                 <p className="text-4xl font-bold text-primary">{jobCount}</p>
               </Link>
             </div>
             <div className="bg-white rounded-lg shadow-md p-6">
-              <h2 className="text-xl font-semibold text-gray-800">Total Users</h2>
+              <h2 className="text-xl font-semibold text-gray-800">
+                Total Users
+              </h2>
               <Link to="/admin/users">
                 <p className="text-4xl font-bold text-primary">{userCount}</p>
               </Link>
             </div>
           </div>
           <div className="mt-6">
-            <h2 className="text-xl font-semibold text-gray-800">Jobs and Users Over Time</h2>
+            <h2 className="text-xl font-semibold text-gray-800">
+              Jobs and Users Over Time
+            </h2>
             <div className="bg-white rounded-lg shadow-md mt-4 p-6">
               <ResponsiveContainer width="100%" height={400}>
                 <LineChart
@@ -106,13 +118,29 @@ const AdminDashboard = () => {
                   margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
                 >
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="formattedCreatedAt" label={{ value: 'Date', position: 'insideBottomRight', offset: 0 }} />
-                  <YAxis label={{ value: 'Count', angle: -90, position: 'insideLeft' }} />
+                  <XAxis
+                    dataKey="formattedCreatedAt"
+                    label={{
+                      value: "Date",
+                      position: "insideBottomRight",
+                      offset: 0,
+                    }}
+                  />
+                  <YAxis
+                    label={{
+                      value: "Count",
+                      angle: -90,
+                      position: "insideLeft",
+                    }}
+                  />
                   <Tooltip
-                    contentStyle={{ backgroundColor: "#f5f5f5", border: "1px solid #ccc" }}
+                    contentStyle={{
+                      backgroundColor: "#f5f5f5",
+                      border: "1px solid #ccc",
+                    }}
                     labelStyle={{ fontWeight: "bold", color: "#333" }}
                     formatter={(value) => `${value}`}
-                    labelFormatter={(value) => `Date: ${value}`} // Custom label formatter
+                    labelFormatter={(value) => `Date: ${value}`}
                   />
                   <Legend />
                   <Line
@@ -122,7 +150,7 @@ const AdminDashboard = () => {
                     stroke="#8884d8"
                     strokeWidth={2}
                     dot={{ stroke: "#8884d8", fill: "#8884d8" }}
-                    connectNulls // Ensure lines connect even when no data is available
+                    connectNulls
                   />
                   <Line
                     type="monotone"
@@ -131,7 +159,7 @@ const AdminDashboard = () => {
                     stroke="#82ca9d"
                     strokeWidth={2}
                     dot={{ stroke: "#82ca9d", fill: "#82ca9d" }}
-                    connectNulls // Ensure lines connect even when no data is available
+                    connectNulls
                   />
                 </LineChart>
               </ResponsiveContainer>
