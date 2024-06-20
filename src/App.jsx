@@ -33,10 +33,10 @@ function App() {
           {/* Protected routes */}
           <Route element={<RequireAuth />}>
             <Route element={<RequireRole role="user" />}>
+              <Route path="/profile" element={<Profile />} />
               <Route path="/job-board" element={<JobDashboard />} />
               <Route path="/jobs/:id" element={<JobProfile />} />
               <Route path="/apply/:id" element={<JobApply />} />
-              <Route path="/profile" element={<Profile />} />
             </Route>
           </Route>
 
