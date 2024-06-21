@@ -3,7 +3,7 @@ import JobCard from "../job-board/JobCard";
 import apiRequest from "../../utils/utils";
 import Loader from "../../components/Loader";
 import Pagination from "../../components/Pagination";
-import Header from "../../components/Header";
+import Header from '../../components/Header';
 import FilterComponent from "../../components/FilterComponent";
 
 const JobDashboard = () => {
@@ -27,12 +27,28 @@ const JobDashboard = () => {
       setLoading(true); // Start loading indicator
 
       try {
-        // Convert filters to query string
-        const query = new URLSearchParams(filters).toString();
-        const data = await apiRequest("GET", `/jobs?${query}`);
+        const token = localStorage.getItem("token");
 
-        // Sort jobs based on filters
-        const sortedJobs = sortJobs(data, filters.sortField, filters.sortOrder);
+        // Combine filters with search query
+        const queryParams = {
+          ...filters
+        };
+
+        // Convert filters to query string
+        const query = new URLSearchParams(queryParams).toString();
+        const data = await apiRequest("GET", `/jobs?${query}`, null, {
+          Authorization: `Bearer ${token}`,
+        });
+
+        // Sort jobs
+        const sortedJobs = data.sort((a, b) => {
+          if (filters.sortField === "salary") {
+            return filters.sortOrder === "ascending" ? a.salary - b.salary : b.salary - a.salary;
+          } else if (filters.sortField === "freshness" || filters.sortField === "relevance") {
+            return new Date(b.createdAt) - new Date(a.createdAt); // Sort by job creation date
+          }
+          return 0;
+        });
 
         // Filter jobs based on search query
         const filteredJobs = filterJobs(sortedJobs, filters.searchQuery);
@@ -41,23 +57,12 @@ const JobDashboard = () => {
       } catch (error) {
         console.error("Failed to fetch job listings", error);
       } finally {
-        setLoading(false); // Stop loading indicator
+        setLoading(false); // Stop loading after API call (success or failure)
       }
     };
 
     fetchJobs();
   }, [filters]); // Re-fetch jobs when filters change
-
-  const sortJobs = (jobs, sortField, sortOrder) => {
-    return jobs.sort((a, b) => {
-      if (sortField === "salary") {
-        return sortOrder === "ascending" ? a.salary - b.salary : b.salary - a.salary;
-      } else if (sortField === "freshness" || sortField === "relevance") {
-        return new Date(b.createdAt) - new Date(a.createdAt);
-      }
-      return 0;
-    });
-  };
 
   const filterJobs = (jobs, searchQuery) => {
     return jobs.filter(job =>
@@ -68,17 +73,19 @@ const JobDashboard = () => {
   };
 
   const handleFilterChange = (filterType, value) => {
+    setLoading(true);
     setFilters(prevFilters => ({
       ...prevFilters,
-      [filterType]: value
+      [filterType]: value,
     }));
   };
 
   const handleSortChange = (field, order = "ascending") => {
+    setLoading(true);
     setFilters(prevFilters => ({
       ...prevFilters,
       sortField: field,
-      sortOrder: order
+      sortOrder: order,
     }));
   };
 
@@ -87,19 +94,13 @@ const JobDashboard = () => {
       setFilters(prevFilters => ({
         ...prevFilters,
         salaryMin: e.target.name === 'salaryMin' ? e.target.value : prevFilters.salaryMin,
-        salaryMax: e.target.name === 'salaryMax' ? e.target.value : prevFilters.salaryMax
+        salaryMax: e.target.name === 'salaryMax' ? e.target.value : prevFilters.salaryMax,
       }));
     }
   };
 
-  const handleSearch = (searchQuery) => {
-    setFilters(prevFilters => ({
-      ...prevFilters,
-      searchQuery: searchQuery.trim()
-    }));
-  };
-
   const clearFilters = () => {
+    setLoading(true);
     setFilters({
       title: "",
       location: "",
@@ -112,6 +113,12 @@ const JobDashboard = () => {
     });
   };
 
+  const handleSearch = (searchQuery) => {
+    setFilters(prevFilters => ({
+      ...prevFilters,
+      searchQuery: searchQuery.trim()
+    }));
+  };
   // Calculate the current jobs
   const indexOfLastJob = currentPage * jobsPerPage;
   const indexOfFirstJob = indexOfLastJob - jobsPerPage;

@@ -17,6 +17,7 @@ const AdminDashboard = () => {
   const [jobStats, setJobStats] = useState([]);
   const [jobCount, setJobCount] = useState(0);
   const [userCount, setUserCount] = useState(0);
+  const [applicationCount, setApplicationCount] = useState(0);
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
@@ -32,12 +33,15 @@ const AdminDashboard = () => {
         if (userData.role === "admin") {
           setIsAdmin(true);
 
-          // Fetch jobs and users simultaneously
-          const [jobs, users] = await Promise.all([
+          // Fetch jobs, users, and applications simultaneously
+          const [jobs, users, applications] = await Promise.all([
             apiRequest("GET", "/jobs", null, {
               Authorization: `Bearer ${token}`,
             }),
             apiRequest("GET", "/auth/users", null, {
+              Authorization: `Bearer ${token}`,
+            }),
+            apiRequest("GET", "/applications", null, {
               Authorization: `Bearer ${token}`,
             }),
           ]);
@@ -60,6 +64,7 @@ const AdminDashboard = () => {
           setJobStats(formattedData);
           setJobCount(jobs.length);
           setUserCount(users.length);
+          setApplicationCount(applications.length);
         } else {
           alert("Access Denied: You are not authorized to view this page.");
         }
@@ -96,6 +101,14 @@ const AdminDashboard = () => {
               </h2>
               <Link to="/admin/jobs">
                 <p className="text-4xl font-bold text-primary">{jobCount}</p>
+              </Link>
+            </div>
+            <div className="bg-white rounded-lg shadow-md p-6">
+              <h2 className="text-xl font-semibold text-gray-800">
+                All Applies
+              </h2>
+              <Link to="/admin/applies">
+                <p className="text-4xl font-bold text-primary">{applicationCount}</p>
               </Link>
             </div>
             <div className="bg-white rounded-lg shadow-md p-6">

@@ -18,6 +18,7 @@ import AdminUserList from "./pages/admin/AdminUserList";
 import NotFound from "./components/404"; // Import NotFound component
 import { AuthProvider } from "./contexts/AuthContext";
 import AdminCreateJobs from "./pages/admin/AdminCreateJobs";
+import AdminApplies from "./pages/admin/AdminApplies";
 
 function App() {
   return (
@@ -48,6 +49,7 @@ function App() {
               <Route path="/admin/jobs" element={<AdminJobDashboard />} />
               <Route path="/admin/jobs/:id" element={<AdminJobProfile />} />
               <Route path="/admin/jobs/:id/update" element={<AdminUpdateJob />} />
+              <Route path="/admin/applies" element={<AdminApplies />} />
               <Route path="/admin/users" element={<AdminUserList />} />
             </Route>
           </Route>

@@ -19,24 +19,33 @@ const Header = ({ onSearch, searchQuery }) => {
     <header className="bg-white shadow-md p-4 flex justify-between items-center fixed w-full top-0 z-10">
       <div className="text-2xl font-bold text-gray-800">Job Campus</div>
       <nav className="flex space-x-4">
-        <Link to="/job-board" className="text-gray-600 hover:text-gray-800">
+        <Link
+          to="/job-board"
+          className="text-gray-600 hover:text-gray-800 transition duration-300 ease-in-out"
+        >
           Jobs
         </Link>
-     
+
         {auth.isAuthenticated ? (
           <>
-            <Link to="/profile" className="text-gray-600 hover:text-gray-800">
+            <Link
+              to="/profile"
+              className="text-gray-600 hover:text-gray-800 transition duration-300 ease-in-out"
+            >
               Profile
             </Link>
             <button
               onClick={handleLogout}
-              className="text-gray-600 hover:text-gray-800"
+              className="text-gray-600 hover:text-gray-800 transition duration-300 ease-in-out"
             >
               Logout
             </button>
           </>
         ) : (
-          <Link to="/login" className="text-gray-600 hover:text-gray-800">
+          <Link
+            to="/login"
+            className="text-gray-600 hover:text-gray-800 transition duration-300 ease-in-out"
+          >
             Login
           </Link>
         )}

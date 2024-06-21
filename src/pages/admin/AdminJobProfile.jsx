@@ -37,7 +37,7 @@ const AdminJobProfile = () => {
   const handleDelete = async () => {
     try {
       const token = localStorage.getItem("token");
-      await axios.delete(`http://localhost:5000/jobs/${id}`, {
+      await axios.delete(`https://job-board-backend-55t1.onrender.com/jobs/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

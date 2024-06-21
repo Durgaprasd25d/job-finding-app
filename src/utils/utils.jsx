@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-  baseURL: "http://localhost:5000/",
+  baseURL: "https://job-board-backend-55t1.onrender.com/",
   headers: {
     "Content-Type": "application/json",
   },
